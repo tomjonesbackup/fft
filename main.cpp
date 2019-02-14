@@ -10,6 +10,7 @@ std::vector<std::complex<double>> fft(const std::vector<double>& x)
     const int N = x.size();
     std::vector<std::complex<double>> F(N);
 
+    // base case
     if(N == 2)
     {
         F[0] = x[0] + x[1];
@@ -23,32 +24,20 @@ std::vector<std::complex<double>> fft(const std::vector<double>& x)
         for(int k = 0; k < N/2; ++k)
             W[k] = std::exp(two_pi_over_N*k*-j);
 
-//        std::cout << "W= ";
-//        for(const auto& w : W)
-//            std::cout << w << " ";
-//        std::cout << std::endl;
-
+        // partion x into even and odd indices
         std::vector<double> evens(N/2);
-        for(int n = 0; n < N/2; ++n)
-            evens[n] = x[2*n];
-
-//       std::cout << "evens= ";
-//        for(const auto& e : evens)
-//            std::cout << e << " ";
-//        std::cout << std::endl;
-
         std::vector<double> odds(N/2);
         for(int n = 0; n < N/2; ++n)
+        {
+            evens[n] = x[2*n];
             odds[n] = x[2*n+1];
+        }
 
-//       std::cout << "odds= ";
-//        for(const auto& o : odds)
-//            std::cout << o << " ";
-//        std::cout << std::endl;
-
+        // divide
         const auto& G = fft(evens);
         const auto& H = fft(odds);
 
+        // conquer
         for(int k = 0; k < N/2; ++k)
         {
             F[k] = G[k] + W[k]*H[k];
